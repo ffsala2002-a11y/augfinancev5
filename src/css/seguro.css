@@ -100,7 +100,7 @@
 }
 
 .seguro-item:active { background: #F9FAFB; }
-.seguro-item.ativo  { background: #FFF5F5; }
+.seguro-item.ativo  { background: #000000; }
 
 .seguro-item-icon {
   width: 44px;
