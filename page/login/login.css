@@ -107,7 +107,8 @@ body {
   opacity: 0.5;
 }
 
-#senhaLogin:focus ~.sg-senha {
+#senhaLogin:focus ~ .sg-senha,
+#senhaLogin:valid ~ .sg-senha {
   top: 10rem;
   font-size: 12px;
   font-weight: bold;
