@@ -1,3 +1,5 @@
+import { valorSeguro } from './seguro.js'; // ← seguro celular
+
 // Calcula o valor total das garantias
 export function calcularGarantiaTotal(carrinho) {
   
@@ -16,24 +18,20 @@ export function calcularGarantiaTotal(carrinho) {
       k => k.nce === p.nce
     );
     
-    // Se não encontrar garantia, ignora
-    if (!g) return;
-    
-    // Garantia tipo 1
-    if (p.garantia === 1) {
-      
-      total +=
-        (g.g1 || 0) * p.quantidade;
+    // Garantia GE 1 / GE 2
+    if (g) {
+      if (p.garantia === 1) {
+        total += (g.g1 || 0) * p.quantidade;
+      }
+      if (p.garantia === 2) {
+        total += (g.g2 || 0) * p.quantidade;
+      }
     }
-    
-    // Garantia tipo 2
-    if (p.garantia === 2) {
-      
-      total +=
-        (g.g2 || 0) * p.quantidade;
-    }
+
+    // Seguro celular (30% do preço à vista)
+    total += valorSeguro(p);
   });
   
-  // Retorna total das garantias
+  // Retorna total das garantias + seguro
   return total;
 }
