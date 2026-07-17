@@ -1,4 +1,4 @@
-const btnFechar = document.querySelector(".close");
+/*const btnFechar = document.querySelector(".close");
 const popup = document.querySelector(".popup");
 const bottomBar = document.querySelector(".bottom-bar");
 
@@ -8,4 +8,4 @@ export function popupMobile() {
     popup.classList.remove("show");
     bottomBar.classList.remove("event")
   })
-}
+}*/ 
