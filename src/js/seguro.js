@@ -34,12 +34,14 @@ export function isCelular(produto) {
   return grupo === '13' || desc.includes('TEL. CEL') || desc.includes('TEL.CEL');
 }
 
-// ===== CALCULA VALOR DO SEGURO =====
+// ===== CALCULA VALOR DO SEGURO (considera quantidade) =====
 export function valorSeguro(produto) {
   if (!produto?.seguro) return 0;
   const opcao = OPCOES_SEGURO.find(s => s.id === produto.seguro);
   if (!opcao) return 0;
-  return (Number(produto.preco) || 0) * opcao.percentual;
+  const preco     = Number(produto.preco)     || 0;
+  const quantidade = Number(produto.quantidade) || 1;
+  return preco * quantidade * opcao.percentual;
 }
 
 // ===== NOME DO SEGURO SELECIONADO =====
@@ -91,13 +93,15 @@ export function abrirSeguro(produto, onSelect) {
   modal._onSelect = onSelect;
 
   const seguroAtual = produto.seguro || null;
-  const preco       = Number(produto.preco) || 0;
+  const preco       = Number(produto.preco)      || 0;
+  const quantidade  = Number(produto.quantidade) || 1;
 
   const lista = document.getElementById('seguroLista');
 
   lista.innerHTML = OPCOES_SEGURO.map(s => {
-    const ativo     = seguroAtual === s.id;
-    const valorCalc = preco * s.percentual; // cada opção com seu percentual
+    const ativo      = seguroAtual === s.id;
+    // Valor já considera a quantidade do produto
+    const valorCalc  = preco * quantidade * s.percentual;
 
     return `
       <div class="seguro-item ${ativo ? 'ativo' : ''}" data-id="${s.id}">
