@@ -192,3 +192,21 @@ body {
 .box-garantia .box-info p {
     color: #020202;
 }
+
+.box-dev {
+    width: 100%;
+    height: 50px;
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    color: #fff;
+    background-color: #0f0f0f;
+}
+
+.box-dev p span {
+    font-weight: 700;
+    color: #00800f;
+}
