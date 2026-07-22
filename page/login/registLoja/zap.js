@@ -29,7 +29,7 @@ form.addEventListener('submit', (e) => {
             mostrarAlerta("Campo obrigatório", "erroTextArea");
         }
 
-        if(!nome || !mensagem) return;
+        if (!nome || !mensagem) return;
 
         const texto = `Olá, me chamo ${nome}, ${mensagem}`;
         const textoFormatado = encodeURIComponent(texto);
@@ -48,6 +48,8 @@ function mostrarAlerta(mensagem, tipo) {
 
         erroInput.classList.add("active");
 
+        window.navigator(80);
+
         clearTimeout(timeIdInput);
 
         timeIdInput = setTimeout(() => {
@@ -59,6 +61,8 @@ function mostrarAlerta(mensagem, tipo) {
         erroTextArea.textContent = mensagem;
 
         erroTextArea.classList.add("active");
+
+        window.navigator(80);
 
         clearTimeout(timeTextArea);
 
