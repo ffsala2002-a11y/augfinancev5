@@ -206,9 +206,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 5px;
+  padding: 8px;
   font-size: 10px;
   font-weight: 701;
   color: #fffefe;
-  background-color: #5c5e5c;
+  background-color: #141414;
 }
