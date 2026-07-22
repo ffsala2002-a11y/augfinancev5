@@ -48,7 +48,7 @@ function mostrarAlerta(mensagem, tipo) {
 
         erroInput.classList.add("active");
 
-        window.navigator = 80;
+        navigation.navigate(80);
 
         clearTimeout(timeIdInput);
 
@@ -62,7 +62,7 @@ function mostrarAlerta(mensagem, tipo) {
 
         erroTextArea.classList.add("active");
 
-        window.navigator = 80;
+        navigation.navigate(80);
 
         clearTimeout(timeTextArea);
 
