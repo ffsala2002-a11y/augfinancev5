@@ -49,6 +49,30 @@ body {
     box-shadow: rgba(255, 255, 255, 0.16) 0px 3px 6px, rgba(0, 255, 8, 0.23) 0px 3px 6px;
 }
 
+.box-input {
+    width: 100%;
+    position: relative;
+}
+
+.erro-input {
+    position: absolute;
+    top: -2rem;
+    left: 1rem;
+    padding: 5px;
+    font-weight: bold;
+    border-radius: 8px 8px 8px 0 ;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.6s ease;
+    color: #ffffff;
+    background-color: #fa6363;
+}
+
+.erro-input.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
 .campo {
     width: 100%;
     padding: 10px 12px;
@@ -58,6 +82,10 @@ body {
     border: solid 1px #004a09;
     color: #ffffff;
     background-color: #001510;
+}
+
+.box-textArea {
+    position: relative;
 }
 
 #textArea {
@@ -71,6 +99,25 @@ body {
     border: solid 1px #004a09;
     color: rgb(255, 255, 255);
     background-color: #001510;
+}
+
+.erro-textArea {
+    position: absolute;
+    bottom: -1rem;
+    left: 1rem;
+    padding: 5px;
+    font-weight: bold;
+    border-radius: 0 8px 8px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.6s ease;
+    color: #ffffff;
+    background-color: #fa6363;
+}
+
+.erro-textArea.active {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .btn-zap {
