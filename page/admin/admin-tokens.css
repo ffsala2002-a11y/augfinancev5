@@ -1,0 +1,150 @@
+/* ===== ADICIONE ISSO NO FINAL DO SEU admin.css ===== */
+
+/* TOKEN GERADO */
+.token-gerado-box {
+  background: rgba(76,175,125,0.08);
+  border: 1px solid rgba(76,175,125,0.25);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.token-gerado-label {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.token-gerado-valor {
+  font-size: 20px;
+  font-weight: 900;
+  color: #f0f0f0;
+  letter-spacing: 3px;
+  text-align: center;
+  padding: 10px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  font-family: monospace;
+}
+
+.btn-copy {
+  background: rgba(76,175,125,0.15);
+  border: 1px solid rgba(76,175,125,0.3);
+  color: #4caf7d;
+  border-radius: 8px;
+  padding: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+
+.btn-copy:active { background: rgba(76,175,125,0.3); }
+
+/* LISTA DE TOKENS */
+.tokens-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.token-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.token-card.inativo {
+  opacity: 0.5;
+}
+
+.token-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.token-card-nome {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f0f0f0;
+  margin-bottom: 4px;
+}
+
+.token-card-valor {
+  font-size: 13px;
+  font-weight: 700;
+  color: #c9a84c;
+  letter-spacing: 2px;
+  font-family: monospace;
+}
+
+.token-card-info {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+.token-card-acoes {
+  display: flex;
+  gap: 8px;
+}
+
+/* BADGES */
+.token-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.token-badge.ativo {
+  background: rgba(76,175,125,0.15);
+  color: #4caf7d;
+  border: 1px solid rgba(76,175,125,0.3);
+}
+
+.token-badge.expirado {
+  background: rgba(245,158,11,0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245,158,11,0.3);
+}
+
+.token-badge.desativado {
+  background: rgba(224,85,85,0.1);
+  color: #e05555;
+  border: 1px solid rgba(224,85,85,0.2);
+}
+
+/* BOTÕES PEQUENOS */
+.btn-sm {
+  padding: 7px 12px !important;
+  font-size: 12px !important;
+  flex: 1;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #6b7280;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.15s;
+}
+
+.btn-outline:active { background: rgba(255,255,255,0.05); }

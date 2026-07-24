@@ -34,60 +34,58 @@ document.getElementById('btnLoginAdmin').addEventListener('click', async () => {
   document.getElementById('telaLoginAdmin').style.display = 'none';
   document.getElementById('telaAdmin').style.display = 'flex';
   carregarLojas();
+  carregarTokens();
 });
 
-// ================= LOGOUT ADMIN =================
+// ================= LOGOUT =================
 document.getElementById('btnLogoutAdmin')?.addEventListener('click', async () => {
   await supabase.auth.signOut();
   window.location.reload();
 });
 
-// ================= VERIFICA SESSÃO =================
+// ================= SESSÃO =================
 window.addEventListener('load', async () => {
   const { data } = await supabase.auth.getSession();
   const user = data?.session?.user;
-
   if (user && user.email === 'admin@augfinanceira.com') {
     document.getElementById('telaLoginAdmin').style.display = 'none';
     document.getElementById('telaAdmin').style.display = 'flex';
     carregarLojas();
+    carregarTokens();
   }
 });
 
-// ================= CARREGAR LOJAS =================
-// Cache das lojas para uso no painel de senha
+// ================= LOJAS =================
 let lojasData = [];
 
 async function carregarLojas() {
   const { data } = await supabase.from('lojas').select('*');
   lojasData = data || [];
 
-  const select       = document.getElementById('selectLoja');
-  const selectApagar = document.getElementById('selectLojaApagar');
-  const selectRemover= document.getElementById('selectLojaRemover');
-  const selectSenha  = document.getElementById('selectLojaSenha');
-  const listaEl      = document.getElementById('listaLojas');
+  const select        = document.getElementById('selectLoja');
+  const selectApagar  = document.getElementById('selectLojaApagar');
+  const selectRemover = document.getElementById('selectLojaRemover');
+  const selectSenha   = document.getElementById('selectLojaSenha');
+  const listaEl       = document.getElementById('listaLojas');
 
-  select.innerHTML        = '';
-  selectApagar.innerHTML  = '';
-  selectRemover.innerHTML = '';
-  selectSenha.innerHTML   = '';
-  listaEl.innerHTML       = '';
+  [select, selectApagar, selectRemover, selectSenha].forEach(el => {
+    if (el) el.innerHTML = '';
+  });
+  if (listaEl) listaEl.innerHTML = '';
 
   lojasData.forEach(loja => {
     const option = `<option value="${loja.sigla}">${loja.nome} (${loja.sigla})</option>`;
-    select.innerHTML        += option;
-    selectApagar.innerHTML  += option;
-    selectRemover.innerHTML += option;
-    selectSenha.innerHTML   += option;
+    if (select)        select.innerHTML        += option;
+    if (selectApagar)  selectApagar.innerHTML  += option;
+    if (selectRemover) selectRemover.innerHTML += option;
+    if (selectSenha)   selectSenha.innerHTML   += option;
 
-    // Badge de senha
-    const temSenha = loja.senha ? true : false;
+    const temSenha = !!loja.senha;
     const senhaBadge = temSenha
       ? `<span style="font-size:10px;background:rgba(76,175,125,0.15);color:#4caf7d;border:1px solid rgba(76,175,125,0.3);padding:2px 8px;border-radius:10px;">🔑 Com senha</span>`
       : `<span style="font-size:10px;background:rgba(224,85,85,0.1);color:#e05555;border:1px solid rgba(224,85,85,0.2);padding:2px 8px;border-radius:10px;">⚠️ Sem senha</span>`;
 
-    listaEl.innerHTML += `
+    if (listaEl) listaEl.innerHTML += `
       <div class="loja-card">
         <div class="loja-sigla">${loja.sigla}</div>
         <div class="loja-nome">${loja.nome}</div>
@@ -97,17 +95,14 @@ async function carregarLojas() {
     `;
   });
 
-  // Atualiza senha atual ao trocar select
   atualizarSenhaAtual();
 }
 
-// Atualiza exibição da senha atual no painel de senha
 function atualizarSenhaAtual() {
   const sigla   = document.getElementById('selectLojaSenha')?.value;
   const wrap    = document.getElementById('senhaAtualWrap');
   const textoEl = document.getElementById('senhaAtualTexto');
   if (!sigla || !wrap || !textoEl) return;
-
   const loja = lojasData.find(l => l.sigla === sigla);
   if (loja?.senha) {
     textoEl.textContent = loja.senha;
@@ -126,13 +121,8 @@ document.getElementById('btnCriarLoja').addEventListener('click', async () => {
   const sigla = document.getElementById('siglaLoja').value.trim().toUpperCase();
   const senha = document.getElementById('senhaLoja').value.trim();
 
-  if (!nome || !sigla) {
-    mostrarStatus('statusCriarLoja', '⚠️ Preencha pelo menos nome e sigla.', 'erro');
-    return;
-  }
-
-  if (!senha) {
-    mostrarStatus('statusCriarLoja', '⚠️ Defina uma senha para a loja.', 'erro');
+  if (!nome || !sigla || !senha) {
+    mostrarStatus('statusCriarLoja', '⚠️ Preencha todos os campos.', 'erro');
     return;
   }
 
@@ -141,7 +131,7 @@ document.getElementById('btnCriarLoja').addEventListener('click', async () => {
   if (error) {
     mostrarStatus('statusCriarLoja', '❌ Erro: ' + error.message, 'erro');
   } else {
-    mostrarStatus('statusCriarLoja', `✅ Loja "${sigla}" criada com senha!`, 'sucesso');
+    mostrarStatus('statusCriarLoja', `✅ Loja "${sigla}" criada!`, 'sucesso');
     document.getElementById('nomeLoja').value  = '';
     document.getElementById('siglaLoja').value = '';
     document.getElementById('senhaLoja').value = '';
@@ -151,55 +141,197 @@ document.getElementById('btnCriarLoja').addEventListener('click', async () => {
 
 // ================= GERENCIAR SENHA =================
 document.getElementById('btnSalvarSenha').addEventListener('click', async () => {
-  const sigla    = document.getElementById('selectLojaSenha').value;
+  const sigla     = document.getElementById('selectLojaSenha').value;
   const novaSenha = document.getElementById('novaSenha').value.trim();
 
-  if (!sigla) {
-    mostrarStatus('statusSenha', '⚠️ Selecione uma loja.', 'erro');
-    return;
-  }
-
-  if (!novaSenha) {
-    mostrarStatus('statusSenha', '⚠️ Digite a nova senha.', 'erro');
+  if (!sigla || !novaSenha) {
+    mostrarStatus('statusSenha', '⚠️ Preencha todos os campos.', 'erro');
     return;
   }
 
   if (novaSenha.length < 4) {
-    mostrarStatus('statusSenha', '⚠️ A senha deve ter pelo menos 4 caracteres.', 'erro');
+    mostrarStatus('statusSenha', '⚠️ Senha deve ter pelo menos 4 caracteres.', 'erro');
     return;
   }
 
   const { error } = await supabase
-    .from('lojas')
-    .update({ senha: novaSenha })
-    .eq('sigla', sigla);
+    .from('lojas').update({ senha: novaSenha }).eq('sigla', sigla);
 
   if (error) {
     mostrarStatus('statusSenha', '❌ Erro: ' + error.message, 'erro');
   } else {
     mostrarStatus('statusSenha', `✅ Senha da loja "${sigla}" atualizada!`, 'sucesso');
     document.getElementById('novaSenha').value = '';
-    carregarLojas(); // atualiza cache e badges
+    carregarLojas();
   }
 });
+
+// ================= TOKENS =================
+
+// Gera string aleatória para o token
+function gerarTokenAleatorio() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let token = '';
+  for (let i = 0; i < 16; i++) {
+    if (i > 0 && i % 4 === 0) token += '-';
+    token += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return token; // ex: ABCD-EFGH-IJKL-MNPQ
+}
+
+async function carregarTokens() {
+  const { data } = await supabase
+    .from('tokens')
+    .select('*')
+    .order('criado_em', { ascending: false });
+
+  const lista    = document.getElementById('listaTokens');
+  const totalEl  = document.getElementById('totalTokens');
+  if (!lista) return;
+
+  const tokens = data || [];
+  if (totalEl) totalEl.textContent = tokens.length;
+
+  if (!tokens.length) {
+    lista.innerHTML = '<p style="font-size:13px;color:#6b7280;padding:8px 0">Nenhum token gerado ainda.</p>';
+    return;
+  }
+
+  const agora = new Date();
+
+  lista.innerHTML = tokens.map(t => {
+    const expirado  = new Date(t.data_expiracao) < agora;
+    const dataFmt   = new Date(t.data_expiracao).toLocaleDateString('pt-BR');
+    const criadoFmt = new Date(t.criado_em).toLocaleDateString('pt-BR');
+
+    let statusBadge = '';
+    if (!t.ativo) {
+      statusBadge = `<span class="token-badge desativado">⛔ Desativado</span>`;
+    } else if (expirado) {
+      statusBadge = `<span class="token-badge expirado">⏰ Expirado</span>`;
+    } else {
+      statusBadge = `<span class="token-badge ativo">✅ Ativo</span>`;
+    }
+
+    return `
+      <div class="token-card ${!t.ativo || expirado ? 'inativo' : ''}">
+        <div class="token-card-top">
+          <div>
+            <div class="token-card-nome">${t.nome_pessoa}</div>
+            <div class="token-card-valor">${t.token}</div>
+          </div>
+          ${statusBadge}
+        </div>
+        <div class="token-card-info">
+          <span>📅 Criado: ${criadoFmt}</span>
+          <span>⏳ Expira: ${dataFmt}</span>
+        </div>
+        <div class="token-card-acoes">
+          ${t.ativo && !expirado ? `
+            <button class="btn btn-danger btn-sm" onclick="desativarToken('${t.id}')">
+              ⛔ Desativar
+            </button>
+          ` : ''}
+          <button class="btn btn-outline btn-sm" onclick="deletarToken('${t.id}')">
+            🗑️ Remover
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Gerar token
+document.getElementById('btnGerarToken').addEventListener('click', async () => {
+  const nomePessoa  = document.getElementById('tokenNomePessoa').value.trim();
+  const expiracao   = document.getElementById('tokenExpiracao').value;
+
+  if (!nomePessoa || !expiracao) {
+    mostrarStatus('statusGerarToken', '⚠️ Preencha o nome e a data de expiração.', 'erro');
+    return;
+  }
+
+  const token = gerarTokenAleatorio();
+
+  const { error } = await supabase.from('tokens').insert({
+    token,
+    nome_pessoa:    nomePessoa,
+    ativo:          true,
+    data_expiracao: new Date(expiracao + 'T23:59:59').toISOString()
+  });
+
+  if (error) {
+    mostrarStatus('statusGerarToken', '❌ Erro: ' + error.message, 'erro');
+    return;
+  }
+
+  // Mostra token gerado
+  document.getElementById('tokenGeradoValor').textContent = token;
+  document.getElementById('tokenGerado').style.display = 'block';
+  document.getElementById('tokenNomePessoa').value = '';
+  document.getElementById('tokenExpiracao').value  = '';
+
+  mostrarStatus('statusGerarToken', `✅ Token gerado para ${nomePessoa}!`, 'sucesso');
+  carregarTokens();
+});
+
+// Copiar token
+document.getElementById('btnCopiarToken')?.addEventListener('click', () => {
+  const valor = document.getElementById('tokenGeradoValor').textContent;
+  navigator.clipboard.writeText(valor).then(() => {
+    document.getElementById('btnCopiarToken').textContent = '✅ Copiado!';
+    setTimeout(() => {
+      document.getElementById('btnCopiarToken').textContent = '📋 Copiar';
+    }, 2000);
+  });
+});
+
+// Desativar token
+window.desativarToken = async (id) => {
+  const confirmou = confirm('Desativar este token? O usuário perderá o acesso imediatamente.');
+  if (!confirmou) return;
+
+  const { error } = await supabase
+    .from('tokens').update({ ativo: false }).eq('id', id);
+
+  if (error) {
+    alert('Erro ao desativar: ' + error.message);
+  } else {
+    carregarTokens();
+  }
+};
+
+// Deletar token
+window.deletarToken = async (id) => {
+  const confirmou = confirm('Remover este token permanentemente?');
+  if (!confirmou) return;
+
+  const { error } = await supabase
+    .from('tokens').delete().eq('id', id);
+
+  if (error) {
+    alert('Erro ao remover: ' + error.message);
+  } else {
+    carregarTokens();
+  }
+};
 
 // ================= APAGAR BANCO =================
 document.getElementById('btnApagarBanco').addEventListener('click', async () => {
   const sigla = document.getElementById('selectLojaApagar').value;
   if (!sigla) return;
 
-  const confirmou = confirm(`⚠️ Tem certeza que deseja apagar TODOS os dados da loja "${sigla}"?\n\nEssa ação não pode ser desfeita.`);
-  if (!confirmou) return;
+  if (!confirm(`⚠️ Apagar TODOS os dados da loja "${sigla}"?\n\nEssa ação não pode ser desfeita.`)) return;
 
   mostrarStatus('statusApagar', '⏳ Apagando...', 'info');
 
-  const { error: errProd } = await supabase.from('produtos').delete().eq('loja_sigla', sigla);
-  if (errProd) { mostrarStatus('statusApagar', '❌ Erro produtos: ' + errProd.message, 'erro'); return; }
+  const { error: e1 } = await supabase.from('produtos').delete().eq('loja_sigla', sigla);
+  if (e1) { mostrarStatus('statusApagar', '❌ Erro produtos: ' + e1.message, 'erro'); return; }
 
-  const { error: errGar } = await supabase.from('garantias').delete().eq('loja_sigla', sigla);
-  if (errGar) { mostrarStatus('statusApagar', '❌ Erro garantias: ' + errGar.message, 'erro'); return; }
+  const { error: e2 } = await supabase.from('garantias').delete().eq('loja_sigla', sigla);
+  if (e2) { mostrarStatus('statusApagar', '❌ Erro garantias: ' + e2.message, 'erro'); return; }
 
-  mostrarStatus('statusApagar', `✅ Banco da loja "${sigla}" apagado com sucesso!`, 'sucesso');
+  mostrarStatus('statusApagar', `✅ Banco da loja "${sigla}" apagado!`, 'sucesso');
 });
 
 // ================= APAGAR LOJA =================
@@ -207,21 +339,20 @@ document.getElementById('btnApagarLoja').addEventListener('click', async () => {
   const sigla = document.getElementById('selectLojaRemover').value;
   if (!sigla) return;
 
-  const confirmou = confirm(`⚠️ Deseja apagar a loja "${sigla}" e todos os seus dados?\n\nEssa ação não pode ser desfeita.`);
-  if (!confirmou) return;
+  if (!confirm(`⚠️ Apagar a loja "${sigla}" e todos os seus dados?\n\nEssa ação não pode ser desfeita.`)) return;
 
   mostrarStatus('statusApagarLoja', '⏳ Apagando...', 'info');
 
-  const { error: errProd } = await supabase.from('produtos').delete().eq('loja_sigla', sigla);
-  if (errProd) { mostrarStatus('statusApagarLoja', '❌ Erro produtos: ' + errProd.message, 'erro'); return; }
+  const { error: e1 } = await supabase.from('produtos').delete().eq('loja_sigla', sigla);
+  if (e1) { mostrarStatus('statusApagarLoja', '❌ Erro: ' + e1.message, 'erro'); return; }
 
-  const { error: errGar } = await supabase.from('garantias').delete().eq('loja_sigla', sigla);
-  if (errGar) { mostrarStatus('statusApagarLoja', '❌ Erro garantias: ' + errGar.message, 'erro'); return; }
+  const { error: e2 } = await supabase.from('garantias').delete().eq('loja_sigla', sigla);
+  if (e2) { mostrarStatus('statusApagarLoja', '❌ Erro: ' + e2.message, 'erro'); return; }
 
-  const { error: errLoja } = await supabase.from('lojas').delete().eq('sigla', sigla);
-  if (errLoja) { mostrarStatus('statusApagarLoja', '❌ Erro loja: ' + errLoja.message, 'erro'); return; }
+  const { error: e3 } = await supabase.from('lojas').delete().eq('sigla', sigla);
+  if (e3) { mostrarStatus('statusApagarLoja', '❌ Erro: ' + e3.message, 'erro'); return; }
 
-  mostrarStatus('statusApagarLoja', `✅ Loja "${sigla}" apagada com sucesso!`, 'sucesso');
+  mostrarStatus('statusApagarLoja', `✅ Loja "${sigla}" apagada!`, 'sucesso');
   carregarLojas();
 });
 
@@ -260,21 +391,16 @@ document.getElementById('btnImportar').addEventListener('click', async () => {
 
   for (const lote of chunk(produtos, 500)) {
     const { error } = await supabase.from('produtos').insert(lote);
-    if (error) { mostrarStatus('statusImport', '❌ Erro produtos: ' + error.message, 'erro'); return; }
+    if (error) { mostrarStatus('statusImport', '❌ Erro: ' + error.message, 'erro'); return; }
   }
 
   for (const lote of chunk(garantias, 500)) {
     const { error } = await supabase.from('garantias').insert(lote);
-    if (error) { mostrarStatus('statusImport', '❌ Erro garantias: ' + error.message, 'erro'); return; }
+    if (error) { mostrarStatus('statusImport', '❌ Erro: ' + error.message, 'erro'); return; }
   }
 
   const agora = new Date().toISOString();
-  const { error: errUpdate } = await supabase
-    .from('lojas')
-    .update({ ultima_importacao: agora })
-    .eq('sigla', sigla);
+  await supabase.from('lojas').update({ ultima_importacao: agora }).eq('sigla', sigla);
 
-  if (errUpdate) console.error('Erro ao salvar data:', errUpdate.message);
-
-  mostrarStatus('statusImport', `✅ ${produtos.length} produtos e ${garantias.length} garantias importados para ${sigla}!`, 'sucesso');
+  mostrarStatus('statusImport', `✅ ${produtos.length} produtos e ${garantias.length} garantias importados!`, 'sucesso');
 });

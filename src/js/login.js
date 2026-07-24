@@ -20,7 +20,7 @@ const vozErroLoja =
 // Controle do timeout
 let timeErroId;
 
-// Função de erro visual
+// Função de erro padronizada
 function mostrarErro(el, msg, audio) {
   el.textContent = msg;
   el.classList.add("active");
@@ -41,41 +41,49 @@ document
   .getElementById('btnEntrar')
   .addEventListener('click', async () => {
 
-    // Pega valores dos inputs
     const nome =
-      document.getElementById('nomeUsuario')
-      .value.trim();
+      document.getElementById('nomeUsuario').value.trim();
 
     const sigla =
-      document.getElementById('siglaLoja')
-      .value.trim().toUpperCase();
+      document.getElementById('siglaLoja').value.trim().toUpperCase();
 
     const senha =
-      document.getElementById('senhaLogin')
-      .value.trim();
+      document.getElementById('senhaLogin').value.trim();
+
+    const token =
+      document.getElementById('tokenAcesso').value.trim();
 
     // Verifica campos vazios
-    if (!nome || !sigla || !senha) {
-      mostrarErro(
-        dadosErro,
-        'Preencha todos os campos',
-        vozErroCampo
-      );
+    if (!nome || !sigla || !senha || !token) {
+      mostrarErro(dadosErro, 'Preencha todos os campos', vozErroCampo);
       return;
     }
 
     // Verifica tamanho da sigla
     if (sigla.length < 3) {
-      mostrarErro(
-        erroSigla,
-        'A sigla deve ter pelo menos 3 caracteres',
-        vozErroSigla
-      );
+      mostrarErro(erroSigla, 'A sigla deve ter pelo menos 3 caracteres', vozErroSigla);
       return;
     }
 
-    // Busca loja no Supabase verificando sigla + senha
-    const { data, error } =
+    // ===== VALIDA TOKEN =====
+    const agora = new Date().toISOString();
+
+    const { data: tokenData, error: tokenError } =
+      await supabase
+        .from('tokens')
+        .select('*')
+        .eq('token', token)
+        .eq('ativo', true)
+        .gt('data_expiracao', agora)
+        .single();
+
+    if (tokenError || !tokenData) {
+      mostrarErro(dadosErro, 'Token inválido, expirado ou desativado', vozErroLoja);
+      return;
+    }
+
+    // ===== VALIDA LOJA + SENHA =====
+    const { data: lojaData, error: lojaError } =
       await supabase
         .from('lojas')
         .select('*')
@@ -83,13 +91,8 @@ document
         .eq('senha', senha)
         .single();
 
-    // Loja não encontrada ou senha errada
-    if (error || !data) {
-      mostrarErro(
-        dadosErro,
-        'Sigla ou senha incorretos',
-        vozErroLoja
-      );
+    if (lojaError || !lojaData) {
+      mostrarErro(dadosErro, 'Sigla ou senha incorretos', vozErroLoja);
       return;
     }
 
@@ -99,7 +102,8 @@ document
       JSON.stringify({
         nome,
         sigla,
-        nomeLoja: data.nome
+        nomeLoja: lojaData.nome,
+        tokenId: tokenData.id
       })
     );
 

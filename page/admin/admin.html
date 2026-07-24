@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <link rel="stylesheet" href="./admin.css">
-  <link rel="manifest" href="./manifest-admin.json">
-  <link rel="icon" href="../../src/img/aug-admin.png" type="image/png">
+  <link rel="manifest" href="../../manifest.json">
+  <link rel="icon" href="../../src/img/AUG.png" type="image/png">
   <title>AUG — Admin</title>
 </head>
 
@@ -30,7 +30,6 @@
       <div>
         <div class="admin-topo-brand">AUG</div>
         <span class="admin-topo-sub">Administrador</span>
-        <span class="dev">©2026 - Desenvolvido por DiegoDEV</span>
       </div>
       <button id="btnLogoutAdmin">🚪 Sair</button>
     </div>
@@ -82,6 +81,36 @@
             <button class="btn btn-gold" id="btnSalvarSenha">🔑 Salvar Senha</button>
             <p id="statusSenha" class="status-msg"></p>
           </div>
+        </div>
+      </div>
+
+      <!-- TOKENS -->
+      <div id="painel-tokens" class="painel">
+        <div class="page-header">
+          <h1>Tokens de Acesso</h1>
+          <p>Gerencie os tokens individuais de acesso</p>
+        </div>
+
+        <!-- GERAR TOKEN -->
+        <div class="painel-card">
+          <h3>Gerar novo token</h3>
+          <div class="field-group">
+            <input type="text" id="tokenNomePessoa" placeholder="Nome da pessoa">
+            <input type="date" id="tokenExpiracao">
+            <button class="btn btn-gold" id="btnGerarToken">🔑 Gerar Token</button>
+            <div id="tokenGerado" class="token-gerado-box" style="display:none">
+              <p class="token-gerado-label">Token gerado:</p>
+              <div class="token-gerado-valor" id="tokenGeradoValor"></div>
+              <button class="btn btn-copy" id="btnCopiarToken">📋 Copiar</button>
+            </div>
+            <p id="statusGerarToken" class="status-msg"></p>
+          </div>
+        </div>
+
+        <!-- LISTA TOKENS -->
+        <div class="painel-card">
+          <h3>Tokens ativos — <span id="totalTokens">0</span> no total</h3>
+          <div id="listaTokens" class="tokens-lista"></div>
         </div>
       </div>
 
@@ -168,6 +197,10 @@
         <span class="bar-icon">🔑</span>
         <span class="bar-label">Senha</span>
       </button>
+      <button class="bar-btn" onclick="mostrarPainel('tokens', this)">
+        <span class="bar-icon">🎫</span>
+        <span class="bar-label">Tokens</span>
+      </button>
       <button class="bar-btn" onclick="mostrarPainel('importar', this)">
         <span class="bar-icon">⬆️</span>
         <span class="bar-label">Importar</span>
@@ -212,5 +245,4 @@
   </script>
 
 </body>
-
 </html>
