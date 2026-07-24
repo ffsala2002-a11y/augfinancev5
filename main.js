@@ -21,6 +21,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
+import { supabase } from './src/js/supabase.js';
+
+// ===== VERIFICA TOKEN NO INÍCIO =====
+async function verificarAcesso() {
+  const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
+
+  // Sem usuário logado → login
+  if (!usuario) {
+    window.location.href = './src/pages/login/login.html';
+    return false;
+  }
+
+  // Sem tokenId salvo → login
+  if (!usuario.tokenId) {
+    localStorage.removeItem('usuario');
+    window.location.href = './src/pages/login/login.html';
+    return false;
+  }
+
+  // Verifica token no Supabase
+  const agora = new Date().toISOString();
+
+  const { data, error } = await supabase
+    .from('tokens')
+    .select('id, ativo, data_expiracao')
+    .eq('id', usuario.tokenId)
+    .single();
+
+  // Token não encontrado, desativado ou expirado → login
+  if (
+    error ||
+    !data ||
+    !data.ativo ||
+    new Date(data.data_expiracao) < new Date()
+  ) {
+    localStorage.removeItem('usuario');
+    window.location.href = './src/pages/login/login.html';
+    return false;
+  }
+
+  return true;
+}
+
+// Roda verificação antes de iniciar o app
+const acessoPermitido = await verificarAcesso();
+if (!acessoPermitido) throw new Error('Sem acesso');
+
 
 // proteção de rota
 const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
