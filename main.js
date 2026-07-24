@@ -12,7 +12,7 @@ import { iniciarCompartilhar } from './src/js/compartilhar.js';
 import { iniciarFinanciamento, renderFinanciamento } from './src/js/financiamento.js';
 
 
-// html carregado
+// html carregadoo
 document.addEventListener('DOMContentLoaded', () => {
 
   document
