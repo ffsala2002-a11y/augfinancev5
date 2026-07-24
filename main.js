@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-import { supabase } from './src/js/supabase.js';
 
 // ===== VERIFICA TOKEN NO INÍCIO =====
 async function verificarAcesso() {
@@ -29,14 +28,14 @@ async function verificarAcesso() {
 
   // Sem usuário logado → login
   if (!usuario) {
-    window.location.href = './src/pages/login/login.html';
+    window.location.href = './page/login/login.html';
     return false;
   }
 
   // Sem tokenId salvo → login
   if (!usuario.tokenId) {
     localStorage.removeItem('usuario');
-    window.location.href = './src/pages/login/login.html';
+    window.location.href = './page/login/login.html';
     return false;
   }
 
@@ -57,7 +56,7 @@ async function verificarAcesso() {
     new Date(data.data_expiracao) < new Date()
   ) {
     localStorage.removeItem('usuario');
-    window.location.href = './src/pages/login/login.html';
+    window.location.href = './page/login/login.html';
     return false;
   }
 
