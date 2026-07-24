@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-// ===== VERIFICA TOKEN NO INÍCIO =====
+// VERIFICA O TOKEN DE ACESSO
 async function verificarAcesso() {
   const usuario = JSON.parse(localStorage.getItem('usuario') || 'null');
 
